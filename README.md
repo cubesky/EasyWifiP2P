@@ -1,4 +1,4 @@
-#Easy Wifi P2P
+# Easy Wifi P2P
 
 A Library written in Kotlin and Java to make your WifiDirect Easiler
 
