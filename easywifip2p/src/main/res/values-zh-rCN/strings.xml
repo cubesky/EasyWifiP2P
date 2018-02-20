@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ForegroundNotification">简易 Wifi 点对点</string>
+    <string name="ForegroundNotificationContent">正在运行</string>
+</resources>
