@@ -48,6 +48,7 @@ public class WifiP2PHelper {
         public static final String PEER_LIST = "party.liyin.easywifip2p.request.peerlist";
         public static final String CONNECT = "party.liyin.easywifip2p.request.connect";
         public static final String DISCONNECT = "party.liyin.easywifip2p.request.disconnect";
+        public static final String CONNINFO = "party.liyin.easywifip2p.request.conninfo";
     }
 
     public static class ERROR {
@@ -58,14 +59,14 @@ public class WifiP2PHelper {
 
     private static final int PERMISSIONS_REQUEST_CODE_ACCESS_COARSE_LOCATION = 120;
 
-    interface PeerListener {
+    public interface PeerListener {
         /**
          * Callback when Peer discovered
          * @param peers Peer array
          */
         void foundPeers(ArrayList<WifiP2pDevice> peers);
     }
-    interface ConnectListener {
+    public interface ConnectListener {
         /**
          * Callback when connect is done
          * @param state True for success (Usually ignore) / False for failed
@@ -78,7 +79,7 @@ public class WifiP2PHelper {
          */
         void connectState(boolean state);
     }
-    interface ConnectInfoListener {
+    public interface ConnectInfoListener {
         /**
          * Callback when coonect state is connected. This will return a network info for this connection
          * @param address Group Owner Address
@@ -194,6 +195,16 @@ public class WifiP2PHelper {
         context.sendBroadcast(intent);
     }
 
+    /**
+     * replay connect info
+     */
+    public void requestConnInfo() {
+        Intent intent = new Intent();
+        intent.setAction(ACTION_SEND_DATA_TO_SERVICE);
+        intent.putExtra("Request",Request.CONNINFO);
+        context.sendBroadcast(intent);
+    }
+
     class EasyReceiver extends BroadcastReceiver {
 
         @Override
@@ -214,7 +225,9 @@ public class WifiP2PHelper {
                     if (connectInfoListener != null) {
                         try {
                             JSONObject json = new JSONObject(intent.getStringExtra("Data"));
-                            connectInfoListener.connectInfo(json.getString("groupOwnerHostAddress"),json.getBoolean("isGroupOwner"),json.getBoolean("groupFormed"));
+                            if (json.has("groupOwnerHostAddress")){
+                                connectInfoListener.connectInfo(json.getString("groupOwnerHostAddress"),json.getBoolean("isGroupOwner"),json.getBoolean("groupFormed"));
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
