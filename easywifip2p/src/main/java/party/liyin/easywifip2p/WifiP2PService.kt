@@ -12,10 +12,8 @@ import android.net.wifi.p2p.WifiP2pManager
 import android.os.Build
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
-import com.pawegio.kandroid.fromApi
-import com.pawegio.kandroid.notificationManager
-import com.pawegio.kandroid.wifiManager
-import com.pawegio.kandroid.wifiP2pManager
+import android.support.v4.app.NotificationManagerCompat
+import com.pawegio.kandroid.*
 
 class WifiP2PService : Service() {
     override fun onBind(intent: Intent): IBinder? = null
@@ -30,6 +28,7 @@ class WifiP2PService : Service() {
 
     @SuppressLint("NewApi")
     override fun onCreate() {
+        NotificationManagerCompat.from(this)
         fromApi(Build.VERSION_CODES.O){
             notificationManager?.createNotificationChannel(NotificationChannel(EASYWIFIP2P_CHANNEL_ID,
                     getText(R.string.ForegroundNotification), NotificationManager.IMPORTANCE_MIN).apply {
@@ -38,16 +37,28 @@ class WifiP2PService : Service() {
                 this.importance = NotificationManager.IMPORTANCE_MIN
                 this.lockscreenVisibility = Notification.VISIBILITY_SECRET
             })
+            startForeground(EASYWIFIP2P_NOTIFY_ID,NotificationCompat.Builder(applicationContext,EASYWIFIP2P_CHANNEL_ID).apply {
+                this.setSmallIcon(R.drawable.ic_stat_name)
+                this.setVisibility(Notification.VISIBILITY_SECRET)
+                this.priority = NotificationCompat.PRIORITY_MIN
+                this.setCategory(Notification.CATEGORY_SERVICE)
+                this.setOngoing(true)
+                this.setLocalOnly(true)
+                this.setSubText(getText(R.string.ForegroundNotification))
+            }.build())
         }
-        startForeground(EASYWIFIP2P_NOTIFY_ID,NotificationCompat.Builder(applicationContext,EASYWIFIP2P_CHANNEL_ID).apply {
-            this.setSmallIcon(R.drawable.ic_stat_name)
-            this.setVisibility(Notification.VISIBILITY_SECRET)
-            this.priority = NotificationCompat.PRIORITY_MIN
-            this.setCategory(Notification.CATEGORY_SERVICE)
-            this.setOngoing(true)
-            this.setLocalOnly(true)
-            this.setSubText(getText(R.string.ForegroundNotification))
-        }.build())
+        toApi(Build.VERSION_CODES.O) {
+            startForeground(EASYWIFIP2P_NOTIFY_ID,NotificationCompat.Builder(applicationContext).apply {
+                this.setSmallIcon(R.drawable.ic_stat_name)
+                this.setVisibility(Notification.VISIBILITY_SECRET)
+                this.priority = NotificationCompat.PRIORITY_MIN
+                this.setCategory(Notification.CATEGORY_SERVICE)
+                this.setOngoing(true)
+                this.setLocalOnly(true)
+                this.setSubText(getText(R.string.ForegroundNotification))
+            }.build())
+        }
+
         receiver = WifiP2PReceiver(wifiP2pManager!!,wifiP2pManager?.initialize(this,mainLooper,null)!!)
         wifiLock = wifiManager?.createWifiLock(WifiManager.WIFI_MODE_FULL,"EasyWifiP2P")!!.apply { this@apply.setReferenceCounted(false) }
         val intentFilter = IntentFilter()
