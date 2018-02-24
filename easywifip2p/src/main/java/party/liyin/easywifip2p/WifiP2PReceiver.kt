@@ -19,6 +19,7 @@ class WifiP2PReceiver(val manager: WifiP2pManager, val channel: WifiP2pManager.C
 
     var wifi_state = "Unknown"
     val peers = mutableListOf<WifiP2pDevice>()
+    var connjson : JSONObject? = null
 
     override fun onReceive(context: Context, intent: Intent) {
         i("ACTION: " + intent.action)
@@ -57,11 +58,11 @@ class WifiP2PReceiver(val manager: WifiP2pManager, val channel: WifiP2pManager.C
                         val p2pInfoIntent = Intent()
                         p2pInfoIntent.action = WifiP2PHelper.ACTION_RECIEVE_DATA
                         p2pInfoIntent.putExtra("Action", WifiP2PHelper.P2PInfo.ACTION)
-                        val json = JSONObject()
-                        json.put("isGroupOwner", it.isGroupOwner)
-                        json.put("groupFormed", it.groupFormed)
-                        json.put("groupOwnerHostAddress",it.groupOwnerAddress.hostAddress)
-                        p2pInfoIntent.putExtra("Data",json.toString())
+                        connjson = JSONObject()
+                        connjson?.put("isGroupOwner", it.isGroupOwner)
+                        connjson?.put("groupFormed", it.groupFormed)
+                        connjson?.put("groupOwnerHostAddress",it.groupOwnerAddress.hostAddress)
+                        p2pInfoIntent.putExtra("Data",(if (connjson == null) JSONObject() else connjson).toString())
                         context.sendBroadcast(p2pInfoIntent)
                     })
                 } else {
@@ -112,6 +113,9 @@ class WifiP2PReceiver(val manager: WifiP2pManager, val channel: WifiP2pManager.C
                                 context.sendBroadcast(sendIntent)
                             }
                         })
+                    }
+                    WifiP2PHelper.Request.CONNINFO -> {
+
                     }
                     WifiP2PHelper.Request.DISCONNECT -> {
                         manager.cancelConnect(channel,null)

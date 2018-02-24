@@ -21,8 +21,8 @@ class MainActivity : AppCompatActivity() {
             val item = parent.getItemAtPosition(position) as WifiP2pDevice
             wifiP2P.connectToPeer(item)
         }
-        wifiP2P.setConnectInfoListener { address, deviceHostAddress, isGroupOwner, groupFormed ->
-            println("========\nAddress:$address\nDeviceHostAddress:$deviceHostAddress\nisGroupOwner:$isGroupOwner\ngroupFormed:$groupFormed\n========")
+        wifiP2P.setConnectInfoListener { address, isGroupOwner, groupFormed ->
+            println("========\nAddress:$address\nisGroupOwner:$isGroupOwner\ngroupFormed:$groupFormed\n========")
         }
         wifiP2P.setConnectListener(object : WifiP2PHelper.ConnectListener{
             override fun connectState(state: Boolean) {

@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 group 'party.liyin'
-version '1.0'
+version '2.2'
 
 android {
     compileSdkVersion 27

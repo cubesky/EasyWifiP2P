@@ -115,7 +115,7 @@ public class WifiP2PHelper {
     public void easyStart(){
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_RECIEVE_DATA);
-        context.registerReceiver(easyReceiver, filter);
+        context.getApplicationContext().registerReceiver(easyReceiver, filter);
         context.startService(new Intent(context,WifiP2PService.class));
     }
 
@@ -126,7 +126,7 @@ public class WifiP2PHelper {
         stopDiscovery();
         disconnectAll();
         context.stopService(new Intent(context,WifiP2PService.class));
-        context.unregisterReceiver(easyReceiver);
+        context.getApplicationContext().unregisterReceiver(easyReceiver);
     }
 
     /**
